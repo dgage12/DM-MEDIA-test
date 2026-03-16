@@ -351,22 +351,34 @@
         word-spacing: 0.4em;
       }
 
-      /* Hero headline — switch to vw so it scales with screen width */
-      .hl-dm {
-        font-size: 19vw;
-        left: 2%;
-        top: calc(50% - 12vw);
+      /* Hero headline — fill hero and flex-center the group */
+      .headline {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 2vw;
       }
-      .hl-arrows {
-        font-size: 13vw;
-        left: 39%;
-        top: calc(50% - 8.5vw + 1%);
+      .hl-dm, .hl-arrows, .hl-media {
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
       }
-      .hl-media {
-        font-size: 18vw;
-        left: 55%;
-        top: calc(50% - 11.5vw);
-      }
+      .hl-dm     { font-size: 17vw; }
+      .hl-arrows { font-size: 11vw; }
+      .hl-media  { font-size: 16vw; }
+
+      /* Tiles — fix skinny strips by using vw widths + aspect-ratio from desktop proportions */
+      .tile { height: auto; }
+      .t-runner  { width: 24vw; aspect-ratio: 243 / 212; }
+      .t-sneaker { width: 19vw; aspect-ratio: 191 / 330; }
+      .t-build   { width: 26vw; aspect-ratio: 282 / 300; }
+      .t-car     { width: 26vw; aspect-ratio: 285 / 214; }
+      .t-phand   { width: 19vw; aspect-ratio: 194 / 279; }
+      .t-matcha  { width: 20vw; aspect-ratio: 212 / 283; }
+      .t-cherry  { width: 18vw; aspect-ratio: 187 / 207; }
+      .t-pspray  { width: 17vw; aspect-ratio: 174 / 218; }
 
       /* Page 2 */
       .page2 { padding: 10% 6% 9%; }
@@ -401,9 +413,9 @@
     @media (max-width: 480px) {
       .splash-text { font-size: 12pt; }
 
-      .hl-dm     { font-size: 22vw; left: 1%; top: calc(50% - 13.5vw); }
-      .hl-arrows { font-size: 14vw; left: 41%; top: calc(50% - 9.5vw + 1%); }
-      .hl-media  { font-size: 20vw; left: 56%; top: calc(50% - 13vw); }
+      .hl-dm     { font-size: 17vw; }
+      .hl-arrows { font-size: 11vw; }
+      .hl-media  { font-size: 16vw; }
 
       .p2-hl, .p2-arrows { font-size: clamp(18pt, 9vw, 50pt); }
     }
