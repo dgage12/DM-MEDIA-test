@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DM Media</title>
+  <style>
+    @font-face {
+      font-family: 'ExtendaVar';
+      src: url('fonts/Extenda-Variable-TRIAL.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'ExtendaPeta';
+      src: url('fonts/Extenda-80-Peta-TRIAL.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'ExtendaHecto';
+      src: url('fonts/Extenda-40-Hecto-TRIAL.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'ExtendaMicro';
+      src: url('fonts/Extenda-20-Micro-TRIAL.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Nohemi';
+      src: url('fonts/Nohemi-Thin.ttf') format('truetype');
+      font-weight: 100;
+    }
+    @font-face {
+      font-family: 'Nohemi';
+      src: url('fonts/Nohemi-ExtraLight.ttf') format('truetype');
+      font-weight: 200;
+    }
+    @font-face {
+      font-family: 'Nohemi';
+      src: url('fonts/Nohemi-Light.ttf') format('truetype');
+      font-weight: 300;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      overflow-x: hidden;
+      background: #fac889;
+    }
+
+    .splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background:
+        radial-gradient(ellipse 90% 75% at 100% 100%, #ef843e 0%, transparent 72%),
+        radial-gradient(ellipse 60% 55% at 0% 100%,   #f0a06a 0%, transparent 65%),
+        radial-gradient(ellipse 65% 60% at 100% 0%,   #fdd05d 0%, transparent 65%),
+        radial-gradient(ellipse 55% 50% at 0% 0%,     #fae8a0 0%, transparent 60%),
+        radial-gradient(ellipse 80% 70% at 55% 55%,   #fac889 0%, transparent 80%),
+        #fac889;
+      opacity: 1;
+      transition: opacity 1s ease-in-out;
+      pointer-events: none;
+    }
+    .splash.hidden { opacity: 0; }
+
+    .splash-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 200;
+      font-size: 23pt;
+      color: #ea4824;
+      white-space: nowrap;
+      word-spacing: 0.8em;
+      letter-spacing: 0.04em;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background:
+        radial-gradient(ellipse 90% 75% at 0% 0%,   #ef843e 0%, transparent 72%),
+        radial-gradient(ellipse 60% 55% at 100% 0%,  #f0a06a 0%, transparent 65%),
+        radial-gradient(ellipse 65% 60% at 0% 100%,  #fdd05d 0%, transparent 65%),
+        radial-gradient(ellipse 55% 50% at 100% 100%, #fae8a0 0%, transparent 60%),
+        radial-gradient(ellipse 80% 70% at 45% 45%,  #fac889 0%, transparent 80%),
+        #fac889;
+    }
+
+
+    @keyframes tileFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    /* ── PHOTO TILES ── */
+    .tile {
+      position: absolute;
+      overflow: hidden;
+      opacity: 0;
+    }
+    .tile.fadein {
+      animation: tileFadeIn 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    .tile img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      image-rendering: high-quality;
+      will-change: transform;
+    }
+
+    /* Per-tile crop adjustments */
+    .t-runner img  { object-position: center 45%; }
+    .t-sneaker img { object-position: center 28%; transform: scale(1.01); transform-origin: center 28%; }
+    .t-car img     { object-position: center center; }
+    .t-pspray img  { object-position: 55% 62%; }
+    .t-matcha img  { object-fit: contain; object-position: center center; }
+
+    /* Top row */
+    .t-runner  { left: 0;      top: 18%;  width: 16.9%;  height: 23.6%;  z-index: 5;  animation-delay: 0s;    }
+    .t-sneaker { left: 24.5%;  top: 7.5%; width: 13.3%;  height: 36.7%;  z-index: 5;  animation-delay: 0.3s;  }
+    .t-build   { left: 45.5%;  top: 0;    width: 19.6%;  height: 33.3%;  z-index: 5;  animation-delay: 0.55s; }
+    .t-car     { right: 3%;    top: 8.5%; width: 19.8%;  height: 23.8%;  z-index: 5;  animation-delay: 0.8s;  }
+
+    /* Bottom row */
+    .t-phand   { left: 5%;     bottom: 0;  width: 13.5%;  height: 31%;    z-index: 5;  animation-delay: 0.15s; }
+    .t-matcha  { left: 30%;    top: 63%;   width: 14.76%; height: 31.46%; z-index: 15; animation-delay: 0.45s; }
+    .t-cherry  { left: 52%;    top: 65%;   width: 13%;    height: 23%;    z-index: 5;  animation-delay: 0.65s; }
+    .t-pspray  { right: 9%;    top: 57%;   width: 12.12%; height: 24.24%; z-index: 15; animation-delay: 0.9s;  }
+
+    /* ── HEADLINE ── */
+    .hl-dm,
+    .hl-arrows,
+    .hl-media {
+      position: absolute;
+      font-family: 'ExtendaVar', sans-serif;
+      font-variation-settings: 'wdth' 80;
+      color: #ea4824;
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+      z-index: 10;
+    }
+
+    .hl-dm {
+      font-family: 'ExtendaPeta', sans-serif;
+      left: 14%;
+      top: calc(50% - 14vh);
+      font-size: 28vh;
+    }
+
+    .hl-arrows {
+      left: 49%;
+      top: calc(50% - 14vh + 4%);
+      font-size: 19vh;
+      font-variation-settings: 'wdth' 80, 'wght' 900;
+    }
+
+    .hl-media {
+      left: 71%;
+      top: calc(50% - 13.5vh);
+      font-size: 27vh;
+      font-variation-settings: 'wdth' 80;
+    }
+
+    .hl-me {
+      font-family: 'ExtendaHecto', sans-serif;
+    }
+
+    .hl-dia {
+      font-family: 'ExtendaMicro', sans-serif;
+    }
+
+    /* ── PAGE 2 ── */
+    .page2 {
+      position: relative;
+      width: 100vw;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse 90% 75% at 0% 0%,    #f8c9a5 0%, transparent 72%),
+        radial-gradient(ellipse 60% 55% at 100% 0%,  #f5d4bc 0%, transparent 65%),
+        radial-gradient(ellipse 65% 60% at 0% 100%,  #f9f0b8 0%, transparent 65%),
+        radial-gradient(ellipse 55% 50% at 100% 100%, #faf4d5 0%, transparent 60%),
+        radial-gradient(ellipse 80% 70% at 45% 45%,  #f9e7da 0%, transparent 80%),
+        #f9e7da;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5.5% 8% 5%;
+      box-sizing: border-box;
+    }
+
+    /* headline — two flex rows, words pushed to edges */
+    .p2-headline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      pointer-events: none;
+      user-select: none;
+      flex: 1;
+      justify-content: center;
+    }
+    .p2-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      line-height: 1;
+    }
+    .p2-hl {
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 300;
+      font-size: 50pt;
+      color: #ea4824;
+      line-height: 1.05;
+    }
+    .p2-arrows {
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 300;
+      font-size: 50pt;
+      color: #ea4824;
+      line-height: 1.05;
+    }
+
+    /* bottom section */
+    .p2-bottom {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      grid-template-rows: auto auto;
+      column-gap: 8%;
+      margin-top: 5vh;
+      align-items: start;
+    }
+    .p2-services { grid-column: 1; grid-row: 2; }
+    .p2-btn-wrap { grid-column: 2; grid-row: 1; padding-bottom: 16px; }
+    .p2-copy     { grid-column: 2; grid-row: 2; }
+
+    /* service columns */
+    .p2-services {
+      display: flex;
+      gap: 2.5vw;
+      flex: 0 0 auto;
+    }
+    .p2-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .p2-col-title {
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 300;
+      font-size: 13.2px;
+      color: #ea4824;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+    .p2-col-item {
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 300;
+      font-size: 12.1px;
+      color: #ea4824;
+      opacity: 0.75;
+      line-height: 1.3;
+    }
+
+    /* body copy */
+    .p2-copy {
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 200;
+      font-size: 14.42px;
+      line-height: 1.7;
+      color: #ea4824;
+      max-width: 450px;
+      opacity: 0;
+      transition: opacity 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  transform 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform: translateY(18px);
+    }
+    .p2-copy.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── GET STARTED BUTTON ── */
+    .p2-btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      padding: 11px 18px;
+      background: #ea4824;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Nohemi', sans-serif;
+      font-weight: 300;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .p2-btn-text {
+      margin-right: 36px;
+      transition: opacity 0.5s ease;
+    }
+    .p2-btn:hover .p2-btn-text { opacity: 0; }
+    .p2-btn-icon {
+      position: absolute;
+      right: 4px;
+      top: 4px;
+      bottom: 4px;
+      width: 25%;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.18);
+      display: grid;
+      place-items: center;
+      font-style: normal;
+      font-size: 16px;
+      transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .p2-btn:hover .p2-btn-icon { width: calc(100% - 8px); }
+    .p2-btn:active { transform: scale(0.95); }
+
+    /* ── RESPONSIVE ── */
+
+    /* Tablet */
+    @media (max-width: 1024px) {
+      .p2-hl, .p2-arrows { font-size: clamp(28pt, 4.5vw, 50pt); }
+      .p2-services { gap: 2vw; }
+    }
+
+    /* Mobile */
+    @media (max-width: 768px) {
+
+      /* Splash */
+      .splash-text {
+        font-size: 14pt;
+        white-space: normal;
+        text-align: center;
+        width: 80%;
+        word-spacing: 0.4em;
+      }
+
+      /* Hero headline — switch to vw so it scales with screen width */
+      .hl-dm {
+        font-size: 19vw;
+        left: 2%;
+        top: calc(50% - 12vw);
+      }
+      .hl-arrows {
+        font-size: 13vw;
+        left: 39%;
+        top: calc(50% - 8.5vw + 1%);
+      }
+      .hl-media {
+        font-size: 18vw;
+        left: 55%;
+        top: calc(50% - 11.5vw);
+      }
+
+      /* Page 2 */
+      .page2 { padding: 10% 6% 9%; }
+
+      .p2-hl, .p2-arrows { font-size: clamp(20pt, 8vw, 50pt); }
+
+      /* Bottom: single column stack */
+      .p2-bottom {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        column-gap: 0;
+        row-gap: 7vw;
+        margin-top: 8vw;
+      }
+      .p2-services { grid-column: 1; grid-row: 1; }
+      .p2-copy     { grid-column: 1; grid-row: 2; max-width: 100%; }
+      .p2-btn-wrap { grid-column: 1; grid-row: 3; padding-bottom: 0; }
+
+      /* Services: 2×2 grid */
+      .p2-services {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6vw 5vw;
+      }
+
+      .p2-col-title { font-size: 14px; }
+      .p2-col-item  { font-size: 13px; }
+      .p2-copy      { font-size: 14px; }
+    }
+
+    /* Small phone */
+    @media (max-width: 480px) {
+      .splash-text { font-size: 12pt; }
+
+      .hl-dm     { font-size: 22vw; left: 1%; top: calc(50% - 13.5vw); }
+      .hl-arrows { font-size: 14vw; left: 41%; top: calc(50% - 9.5vw + 1%); }
+      .hl-media  { font-size: 20vw; left: 56%; top: calc(50% - 13vw); }
+
+      .p2-hl, .p2-arrows { font-size: clamp(18pt, 9vw, 50pt); }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="splash" id="splash">
+    <p class="splash-text">our DMs are <span id="tw-word"></span><span id="tw-cursor" style="opacity:1">|</span></p>
+  </div>
+
+  <div class="hero">
+
+
+    <!-- Top row photos -->
+    <div class="tile t-runner">
+      <img src="images/freepik__zoom-out-of-img1-and-remove-powerlines__62470.jpeg" alt="">
+    </div>
+    <div class="tile t-sneaker">
+      <img src="images/freepik__recreate-img1-exactly-but-zoom-out__62467.png" alt="">
+    </div>
+    <div class="tile t-build">
+      <img src="images/freepik__recreate-img1__22064.jpeg" alt="">
+    </div>
+    <div class="tile t-car">
+      <img src="images/freepik__highend-car-photography__22062.jpeg" alt="">
+    </div>
+
+    <!-- Bottom row photos -->
+    <div class="tile t-phand">
+      <img src="images/post5a.png" alt="">
+    </div>
+    <div class="tile t-matcha">
+      <img src="images/freepik__combine-img1-and-img2-ultra-close-up-matcha__20019.png" alt="">
+    </div>
+    <div class="tile t-cherry">
+      <img src="images/freepik__recreate-img1__88754.jpeg" alt="">
+    </div>
+    <div class="tile t-pspray">
+      <img src="images/freepik__recreate-img1__90765.jpeg" alt="">
+    </div>
+
+    <!-- Headline -->
+    <div class="headline" aria-hidden="true">
+      <span class="hl-dm">DM</span>
+      <span class="hl-arrows">&gt;&gt;</span>
+      <span class="hl-media"><span class="hl-me">ME</span><span class="hl-dia">DIA</span></span>
+    </div>
+
+
+  </div>
+
+  <!-- Page 2 -->
+  <section class="page2">
+
+
+    <div class="p2-headline">
+      <div class="p2-row">
+        <span class="p2-hl">GETTING</span>
+        <span class="p2-hl">INTO THE</span>
+      </div>
+      <div class="p2-row">
+        <span class="p2-hl">BRANDS</span>
+        <span class="p2-arrows">&gt;&gt;</span>
+        <span class="p2-hl"><span id="p2-tw-word">Spotlight</span><span id="p2-tw-cursor" style="opacity:1">|</span></span>
+      </div>
+    </div>
+
+    <div class="p2-bottom">
+      <div class="p2-services">
+        <div class="p2-col">
+          <span class="p2-col-title">Branding</span>
+          <span class="p2-col-item">brand strategy</span>
+          <span class="p2-col-item">identity design</span>
+          <span class="p2-col-item">brand guidelines</span>
+          <span class="p2-col-item">visual direction</span>
+        </div>
+        <div class="p2-col">
+          <span class="p2-col-title">Campaigns</span>
+          <span class="p2-col-item">art direction</span>
+          <span class="p2-col-item">copywriting</span>
+          <span class="p2-col-item">digital</span>
+          <span class="p2-col-item">print</span>
+        </div>
+        <div class="p2-col">
+          <span class="p2-col-title">Social Media</span>
+          <span class="p2-col-item">content strategy</span>
+          <span class="p2-col-item">photography</span>
+          <span class="p2-col-item">videography</span>
+          <span class="p2-col-item">graphics</span>
+        </div>
+        <div class="p2-col">
+          <span class="p2-col-title">Digital</span>
+          <span class="p2-col-item">web design</span>
+          <span class="p2-col-item">email marketing</span>
+          <span class="p2-col-item">display advertising</span>
+          <span class="p2-col-item">web maintenance</span>
+        </div>
+      </div>
+      <div class="p2-btn-wrap">
+        <button class="p2-btn" onclick="window.location.href='mailto:dylan@dmmedia.au,mitch@dmmedia.au'">
+          <span class="p2-btn-text">Let's chat</span>
+          <i class="p2-btn-icon">&#8250;</i>
+        </button>
+      </div>
+      <p class="p2-copy">
+        Two Art Directors turned brand builders, based in Sydney. We bring strategy and creativity together to help businesses show up with confidence, and with new tools and technology changing what's possible in creative, there's never been a more exciting time to do it.
+      </p>
+    </div>
+
+  </section>
+
+  <script>
+    const SCALE      = 2.16;
+    const PARALLAX   = 25.5;
+    const FLOAT_STR  = 136;
+    const SCALE_LERP    = 0.055;
+    const SCALE_LERP_OUT = 0.04;
+
+    const lerp  = (a, b, t) => a + (b - a) * t;
+    const clamp = (v, lo, hi) => lo > hi ? (lo + hi) / 2 : Math.max(lo, Math.min(hi, v));
+
+    const DEPTHS = {
+      't-runner' : 0.08,
+      't-sneaker': 0.75,
+      't-build'  : 0.35,
+      't-car'    : 0.15,
+      't-phand'  : 0.6,
+      't-matcha' : 1.1,
+      't-cherry' : 0.5,
+      't-pspray' : 0.9,
+    };
+
+    // Raw mouse coords + normalised for float
+    let mx = 0, my = 0, cx = 0, cy = 0;
+    document.addEventListener('mousemove', e => {
+      cx = e.clientX;
+      cy = e.clientY;
+      mx = (cx / window.innerWidth  - 0.5) * 2;
+      my = (cy / window.innerHeight - 0.5) * 2;
+    });
+
+    const states = new Map();
+
+    document.querySelectorAll('.tile').forEach(tile => {
+      const depthKey  = [...tile.classList].find(c => DEPTHS[c]);
+      const depth     = DEPTHS[depthKey] ?? 0.4;
+      // Measure natural rect once before any transforms are applied
+      const nr        = tile.getBoundingClientRect();
+
+      const scaledW   = nr.width  * SCALE;
+      const scaledH   = nr.height * SCALE;
+      const tileCx    = nr.left + nr.width  / 2;
+      const tileCy    = nr.top  + nr.height / 2;
+
+      const s = {
+        depth, nr,
+        fx: 0, fy: 0,
+        scale: 1, targetScale: 1,
+        hovered: false,
+        hx: 0, hy: 0,
+        zElevated: false,
+        // Clamp limits for hover parallax (fixed at natural position)
+        minTx: scaledW / 2 - tileCx,
+        maxTx: window.innerWidth  - tileCx - scaledW / 2,
+        minTy: scaledH / 2 - tileCy,
+        maxTy: window.innerHeight - tileCy - scaledH / 2,
+      };
+      states.set(tile, s);
+    });
+
+    function tick() {
+      states.forEach((s, tile) => {
+        s.fx = mx * s.depth * FLOAT_STR;
+        s.fy = my * s.depth * FLOAT_STR;
+
+        const r = s.nr;
+        const over = cx >= r.left + s.fx && cx <= r.right  + s.fx &&
+                     cy >= r.top  + s.fy && cy <= r.bottom + s.fy;
+
+        if (over && !s.hovered) {
+          s.hovered     = true;
+          s.targetScale = SCALE;
+          if (!s.zElevated) { tile.style.zIndex = '1000'; s.zElevated = true; }
+        } else if (!over && s.hovered) {
+          s.hovered     = false;
+          s.targetScale = 1;
+          s.hx = s.hy   = 0;
+        }
+
+        if (s.hovered) {
+          const px = (cx - (r.left + s.fx)) / r.width  - 0.5;
+          const py = (cy - (r.top  + s.fy)) / r.height - 0.5;
+          s.hx = clamp(px * PARALLAX, s.minTx - s.fx, s.maxTx - s.fx);
+          s.hy = clamp(py * PARALLAX, s.minTy - s.fy, s.maxTy - s.fy);
+        }
+
+        s.scale = lerp(s.scale, s.targetScale, s.hovered ? SCALE_LERP : SCALE_LERP_OUT);
+
+        if (!s.hovered && s.scale < 1.01 && s.zElevated) {
+          tile.style.zIndex = '';
+          s.zElevated = false;
+        }
+
+        const tx = s.hovered ? s.hx + s.fx : s.fx;
+        const ty = s.hovered ? s.hy + s.fy : s.fy;
+        tile.style.transform = `translate(${tx}px,${ty}px) scale(${s.scale})`;
+      });
+
+      requestAnimationFrame(tick);
+    }
+    // Only run hover/parallax on devices that have a real pointer (not touch-only)
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      tick();
+    }
+
+    // Typewriter
+    (function () {
+      const words      = ['open', 'always open'];
+      const wordEl     = document.getElementById('tw-word');
+      const cursorEl   = document.getElementById('tw-cursor');
+      const TYPE_SPEED = 40;
+      const DEL_SPEED  = 22;
+      const WAIT       = 900;
+
+      // Start with "open" already visible, then delete and type "always open"
+      let wi = 0, ci = words[0].length, deleting = true;
+      wordEl.textContent = words[0];
+
+      // Cursor blink
+      setInterval(() => { cursorEl.style.opacity = cursorEl.style.opacity === '0' ? '1' : '0'; }, 500);
+
+      const splash = document.getElementById('splash');
+
+      function step() {
+        const word = words[wi];
+        const isLast = wi === words.length - 1;
+        if (!deleting) {
+          wordEl.textContent = word.slice(0, ++ci);
+          if (ci === word.length) {
+            if (isLast) {
+              setTimeout(() => {
+                splash.classList.add('hidden');
+                // After splash fade (1s) + 0.1s headline hold, fade in tiles with stagger
+                setTimeout(() => {
+                  document.querySelectorAll('.tile').forEach(t => {
+                    t.classList.add('fadein');
+                    t.addEventListener('animationend', () => {
+                      t.style.animation = 'none';
+                      t.style.opacity   = '1';
+                    }, { once: true });
+                  });
+                }, 660);
+              }, WAIT);
+              return;
+            }
+            deleting = true; setTimeout(step, WAIT); return;
+          }
+        } else {
+          wordEl.textContent = word.slice(0, --ci);
+          if (ci === 0) { deleting = false; wi = (wi + 1) % words.length; setTimeout(step, 300); return; }
+        }
+        setTimeout(step, deleting ? DEL_SPEED : TYPE_SPEED);
+      }
+      // Pause on "open" before starting to backspace
+      setTimeout(step, WAIT);
+    })();
+
+    // Page 2 typewriter — triggers when section scrolls into view
+    (function () {
+      const words      = ['Spotlight', 'conversation', 'feed', 'DMs'];
+      const wordEl     = document.getElementById('p2-tw-word');
+      const cursorEl   = document.getElementById('p2-tw-cursor');
+      const TYPE_SPEED = 40;
+      const DEL_SPEED  = 22;
+      const WAIT       = 700;
+
+      // Start with "Spotlight" visible, ready to delete
+      let wi = 0, ci = words[0].length, deleting = true;
+
+      setInterval(() => { cursorEl.style.opacity = cursorEl.style.opacity === '0' ? '1' : '0'; }, 500);
+
+      function step() {
+        const word   = words[wi];
+        const isLast = wi === words.length - 1;
+        if (!deleting) {
+          wordEl.textContent = word.slice(0, ++ci);
+          if (ci === word.length) {
+            if (isLast) return; // stay on DMs forever
+            deleting = true; setTimeout(step, WAIT); return;
+          }
+        } else {
+          wordEl.textContent = word.slice(0, --ci);
+          if (ci === 0) { deleting = false; wi++; setTimeout(step, 300); return; }
+        }
+        setTimeout(step, deleting ? DEL_SPEED : TYPE_SPEED);
+      }
+
+      // Start when page 2 scrolls into view
+      const observer = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting) {
+          observer.disconnect();
+          setTimeout(() => setTimeout(step, WAIT), 250);
+        }
+      }, { threshold: 0.3 });
+      observer.observe(document.querySelector('.page2'));
+    })();
+
+    // Cinematic fade-in for bottom-right copy
+    new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setTimeout(() => entries[0].target.classList.add('visible'), 400);
+      }
+    }, { threshold: 0.5 }).observe(document.querySelector('.p2-copy'));
+  </script>
+</body>
+</html>
