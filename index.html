@@ -358,16 +358,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 2vw;
+        gap: 6vw;
       }
       .hl-dm, .hl-arrows, .hl-media {
         position: relative !important;
         left: auto !important;
         top: auto !important;
       }
-      .hl-dm     { font-size: 17vw; }
-      .hl-arrows { font-size: 11vw; }
-      .hl-media  { font-size: 16vw; }
+      .hl-dm     { font-size: 20vw; }
+      .hl-arrows { font-size: 13vw; }
+      .hl-media  { font-size: 19vw; }
 
       /* Tiles — fix skinny strips by using vw widths + aspect-ratio from desktop proportions */
       .tile { height: auto; }
@@ -413,9 +413,9 @@
     @media (max-width: 480px) {
       .splash-text { font-size: 12pt; }
 
-      .hl-dm     { font-size: 17vw; }
-      .hl-arrows { font-size: 11vw; }
-      .hl-media  { font-size: 16vw; }
+      .hl-dm     { font-size: 20vw; }
+      .hl-arrows { font-size: 13vw; }
+      .hl-media  { font-size: 19vw; }
 
       .p2-hl, .p2-arrows { font-size: clamp(18pt, 9vw, 50pt); }
     }
@@ -550,14 +550,40 @@
       't-pspray' : 0.9,
     };
 
-    // Raw mouse coords + normalised for float
-    let mx = 0, my = 0, cx = 0, cy = 0;
+    const isTouchOnly = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+    // Start cursor off-screen so no tile is accidentally hovered on load
+    let mx = 0, my = 0, cx = -9999, cy = -9999;
+
+    // Desktop: mouse drives float + hover
     document.addEventListener('mousemove', e => {
       cx = e.clientX;
       cy = e.clientY;
       mx = (cx / window.innerWidth  - 0.5) * 2;
       my = (cy / window.innerHeight - 0.5) * 2;
     });
+
+    // Mobile: gyroscope drives float, touch drives scale
+    if (isTouchOnly) {
+      function initGyro() {
+        window.addEventListener('deviceorientation', e => {
+          // gamma = left/right tilt (-90→90), beta = forward/back (-180→180, ~45° at rest)
+          mx = Math.max(-1, Math.min(1, (e.gamma || 0) / 28));
+          my = Math.max(-1, Math.min(1, ((e.beta  || 45) - 45) / 28));
+        });
+      }
+      // iOS 13+ requires explicit permission
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        document.addEventListener('touchstart', () => {
+          DeviceOrientationEvent.requestPermission()
+            .then(r => { if (r === 'granted') initGyro(); })
+            .catch(() => {});
+        }, { once: true });
+      } else {
+        initGyro();
+      }
+    }
 
     const states = new Map();
 
@@ -588,30 +614,53 @@
       states.set(tile, s);
     });
 
+    // Touch tap-to-scale (mobile only)
+    if (isTouchOnly) {
+      states.forEach((s, tile) => {
+        tile.addEventListener('touchstart', () => {
+          // Collapse any other expanded tile first
+          states.forEach((os, ot) => {
+            if (ot !== tile && os.hovered) {
+              os.hovered = false; os.targetScale = 1;
+            }
+          });
+          s.hovered = true; s.targetScale = SCALE;
+          if (!s.zElevated) { tile.style.zIndex = '1000'; s.zElevated = true; }
+        }, { passive: true });
+
+        tile.addEventListener('touchend', () => {
+          s.hovered = false; s.targetScale = 1;
+        });
+      });
+    }
+
     function tick() {
       states.forEach((s, tile) => {
         s.fx = mx * s.depth * FLOAT_STR;
         s.fy = my * s.depth * FLOAT_STR;
 
-        const r = s.nr;
-        const over = cx >= r.left + s.fx && cx <= r.right  + s.fx &&
-                     cy >= r.top  + s.fy && cy <= r.bottom + s.fy;
+        // Mouse hit-testing only on desktop
+        if (!isTouchOnly) {
+          const r = s.nr;
+          const over = cx >= r.left + s.fx && cx <= r.right  + s.fx &&
+                       cy >= r.top  + s.fy && cy <= r.bottom + s.fy;
 
-        if (over && !s.hovered) {
-          s.hovered     = true;
-          s.targetScale = SCALE;
-          if (!s.zElevated) { tile.style.zIndex = '1000'; s.zElevated = true; }
-        } else if (!over && s.hovered) {
-          s.hovered     = false;
-          s.targetScale = 1;
-          s.hx = s.hy   = 0;
-        }
+          if (over && !s.hovered) {
+            s.hovered     = true;
+            s.targetScale = SCALE;
+            if (!s.zElevated) { tile.style.zIndex = '1000'; s.zElevated = true; }
+          } else if (!over && s.hovered) {
+            s.hovered     = false;
+            s.targetScale = 1;
+            s.hx = s.hy   = 0;
+          }
 
-        if (s.hovered) {
-          const px = (cx - (r.left + s.fx)) / r.width  - 0.5;
-          const py = (cy - (r.top  + s.fy)) / r.height - 0.5;
-          s.hx = clamp(px * PARALLAX, s.minTx - s.fx, s.maxTx - s.fx);
-          s.hy = clamp(py * PARALLAX, s.minTy - s.fy, s.maxTy - s.fy);
+          if (s.hovered) {
+            const px = (cx - (r.left + s.fx)) / r.width  - 0.5;
+            const py = (cy - (r.top  + s.fy)) / r.height - 0.5;
+            s.hx = clamp(px * PARALLAX, s.minTx - s.fx, s.maxTx - s.fx);
+            s.hy = clamp(py * PARALLAX, s.minTy - s.fy, s.maxTy - s.fy);
+          }
         }
 
         s.scale = lerp(s.scale, s.targetScale, s.hovered ? SCALE_LERP : SCALE_LERP_OUT);
@@ -628,10 +677,7 @@
 
       requestAnimationFrame(tick);
     }
-    // Only run hover/parallax on devices that have a real pointer (not touch-only)
-    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-      tick();
-    }
+    tick();
 
     // Typewriter
     (function () {
