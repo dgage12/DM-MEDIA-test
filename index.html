@@ -355,23 +355,29 @@
         word-spacing: 0.4em;
       }
 
-      /* Hero headline — fill hero and flex-center the group */
+      /* Hero headline — stacked 2-line layout for mobile */
       .headline {
         position: absolute;
         inset: 0;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 6vw;
+        gap: 0;
+      }
+      .hl-row1 {
+        display: flex;
+        align-items: baseline;
+        gap: 2vw;
       }
       .hl-dm, .hl-arrows, .hl-media {
         position: relative !important;
         left: auto !important;
         top: auto !important;
       }
-      .hl-dm     { font-size: 20vw; }
-      .hl-arrows { font-size: 13vw; }
-      .hl-media  { font-size: 19vw; }
+      .hl-dm     { font-size: 27vw; }
+      .hl-arrows { font-size: 17vw; }
+      .hl-media  { font-size: 27vw; }
 
       /* Headline: show mobile version, hide desktop */
       .p2-hl-desk { display: none; }
@@ -400,16 +406,22 @@
       .p2-col-item::after { content: ', '; }
       .p2-col-item:last-child::after { content: ''; }
 
-      /* Tiles — fix skinny strips by using vw widths + aspect-ratio from desktop proportions */
+      /* Tiles — portrait mobile collage layout */
       .tile { height: auto; }
-      .t-runner  { width: 24vw; aspect-ratio: 243 / 212; }
-      .t-sneaker { width: 19vw; aspect-ratio: 191 / 330; }
-      .t-build   { width: 26vw; aspect-ratio: 282 / 300; }
-      .t-car     { width: 26vw; aspect-ratio: 285 / 214; }
-      .t-phand   { width: 19vw; aspect-ratio: 194 / 279; }
-      .t-matcha  { width: 20vw; aspect-ratio: 212 / 283; }
-      .t-cherry  { width: 18vw; aspect-ratio: 187 / 207; }
-      .t-pspray  { width: 17vw; aspect-ratio: 174 / 218; }
+      .t-runner  { display: none; }
+      .t-pspray  { display: none; }
+      /* matcha — top-left */
+      .t-matcha  { left: 0; top: 0; right: auto; bottom: auto; width: 44vw; aspect-ratio: 212 / 283; }
+      /* cherry — top-right */
+      .t-cherry  { right: 0; top: 2%; left: auto; bottom: auto; width: 33vw; aspect-ratio: 187 / 207; }
+      /* building — left-middle */
+      .t-build   { left: 0; top: 44%; right: auto; bottom: auto; width: 34vw; aspect-ratio: 282 / 300; }
+      /* car — right-middle */
+      .t-car     { right: 0; top: 27%; left: auto; bottom: auto; width: 45vw; aspect-ratio: 285 / 214; }
+      /* phand — bottom-left */
+      .t-phand   { left: 4%; bottom: 0; right: auto; top: auto; width: 28vw; aspect-ratio: 194 / 279; }
+      /* sneaker — bottom-right */
+      .t-sneaker { right: 4%; bottom: 0; left: auto; top: auto; width: 26vw; aspect-ratio: 191 / 330; }
 
       /* Page 2 */
       .page2 { padding: 10% 6% 9%; }
@@ -433,9 +445,9 @@
     @media (max-width: 480px) {
       .splash-text { font-size: 12pt; }
 
-      .hl-dm     { font-size: 20vw; }
-      .hl-arrows { font-size: 13vw; }
-      .hl-media  { font-size: 19vw; }
+      .hl-dm     { font-size: 27vw; }
+      .hl-arrows { font-size: 17vw; }
+      .hl-media  { font-size: 27vw; }
 
       .p2-hl, .p2-arrows { font-size: clamp(18pt, 9vw, 50pt); }
     }
@@ -481,8 +493,10 @@
 
     <!-- Headline -->
     <div class="headline" aria-hidden="true">
-      <span class="hl-dm">DM</span>
-      <span class="hl-arrows">&gt;&gt;</span>
+      <div class="hl-row1">
+        <span class="hl-dm">DM</span>
+        <span class="hl-arrows">&gt;&gt;</span>
+      </div>
       <span class="hl-media"><span class="hl-me">ME</span><span class="hl-dia">DIA</span></span>
     </div>
 
