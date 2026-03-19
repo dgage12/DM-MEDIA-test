@@ -630,7 +630,7 @@
     const isTouchOnly    = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const SCALE          = isTouchOnly ? 2.0 : 2.16;
     const PARALLAX       = 25.5;
-    const FLOAT_STR      = isTouchOnly ? 60  : 136;
+    const FLOAT_STR      = isTouchOnly ? 110 : 136;
     const SCALE_LERP     = 0.065;
     const SCALE_LERP_OUT = 0.04;
     const FLOAT_LERP     = isTouchOnly ? 0.03 : 0.072; // slower on mobile = silkier gyro
@@ -664,7 +664,7 @@
 
     // Mobile: gyroscope drives parallax (premium feel); touch fallback if unavailable
     if (isTouchOnly) {
-      const GYRO_NORM = 22; // degrees to reach ±1 — tighter = more responsive
+      const GYRO_NORM = 16; // degrees to reach ±1 — tighter = more responsive
       let gyroActive  = false;
 
       function handleOrientation(e) {
