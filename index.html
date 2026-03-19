@@ -586,10 +586,10 @@
     const isTouchOnly    = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const SCALE          = isTouchOnly ? 1.4 : 2.16;
     const PARALLAX       = 25.5;
-    const FLOAT_STR      = 136;
+    const FLOAT_STR      = isTouchOnly ? 60  : 136;
     const SCALE_LERP     = 0.065;
     const SCALE_LERP_OUT = 0.04;
-    const FLOAT_LERP     = 0.072;   // smooths the global parallax float
+    const FLOAT_LERP     = isTouchOnly ? 0.03 : 0.072; // slower on mobile = silkier gyro
     const HX_LERP        = 0.10;    // smooths per-tile hover parallax
 
     const lerp  = (a, b, t) => a + (b - a) * t;
@@ -618,16 +618,50 @@
       my = (cy / window.innerHeight - 0.5) * 2;
     });
 
-    // Mobile: hold finger anywhere to drive parallax float; smx/smy lerp back to 0 on lift
+    // Mobile: gyroscope drives parallax (premium feel); touch fallback if unavailable
     if (isTouchOnly) {
-      const onTouch = e => {
-        const t = e.touches[0];
-        mx = (t.clientX / window.innerWidth  - 0.5) * 2;
-        my = (t.clientY / window.innerHeight - 0.5) * 2;
-      };
-      document.addEventListener('touchstart', onTouch, { passive: true });
-      document.addEventListener('touchmove',  onTouch, { passive: true });
-      document.addEventListener('touchend',   () => { mx = 0; my = 0; }, { passive: true });
+      const GYRO_NORM = 22; // degrees to reach ±1 — tighter = more responsive
+      let gyroActive  = false;
+
+      function handleOrientation(e) {
+        if (e.gamma === null || e.beta === null) return;
+        gyroActive = true;
+        // gamma = left/right tilt (-90..90); beta = front/back tilt (-180..180)
+        // ~55° beta is natural phone-in-hand angle → treat as neutral
+        mx = clamp(e.gamma / GYRO_NORM, -1, 1);
+        my = clamp((e.beta - 55) / GYRO_NORM, -1, 1);
+      }
+
+      function startGyro() {
+        window.addEventListener('deviceorientation', handleOrientation, true);
+        // If no events arrive within 1 s, gyro isn't available — fall back to touch
+        setTimeout(() => { if (!gyroActive) setupTouchFallback(); }, 1000);
+      }
+
+      function setupTouchFallback() {
+        const onTouch = e => {
+          const t = e.touches[0];
+          mx = (t.clientX / window.innerWidth  - 0.5) * 2;
+          my = (t.clientY / window.innerHeight - 0.5) * 2;
+        };
+        document.addEventListener('touchstart', onTouch, { passive: true });
+        document.addEventListener('touchmove',  onTouch, { passive: true });
+        document.addEventListener('touchend',   () => { mx = 0; my = 0; }, { passive: true });
+      }
+
+      // iOS 13+ requires a user-gesture to unlock DeviceOrientationEvent
+      if (typeof DeviceOrientationEvent !== 'undefined' &&
+          typeof DeviceOrientationEvent.requestPermission === 'function') {
+        document.addEventListener('touchstart', function askPerm() {
+          document.removeEventListener('touchstart', askPerm);
+          DeviceOrientationEvent.requestPermission()
+            .then(s => { if (s === 'granted') startGyro(); else setupTouchFallback(); })
+            .catch(() => setupTouchFallback());
+        }, { once: true, passive: true });
+      } else {
+        // Android / older iOS — no permission needed
+        startGyro();
+      }
     }
 
     const states = new Map();
