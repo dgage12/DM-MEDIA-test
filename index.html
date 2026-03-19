@@ -142,6 +142,8 @@
     .t-pspray  { right: 9%;    top: 57%;   width: 12.12%; height: 24.24%; z-index: 15; animation-delay: 0.9s;  }
 
     /* ── HEADLINE ── */
+    :root { --tx: 0; --ty: 0; }
+
     .hl-dm,
     .hl-arrows,
     .hl-media {
@@ -160,6 +162,7 @@
       left: 14%;
       top: calc(50% - 14vh);
       font-size: 28vh;
+      transform: translate(calc(var(--tx) * -20px), calc(var(--ty) * -12px));
     }
 
     .hl-arrows {
@@ -167,6 +170,7 @@
       top: calc(50% - 14vh + 4%);
       font-size: 19vh;
       font-variation-settings: 'wdth' 80, 'wght' 900;
+      transform: translate(calc(var(--tx) * -30px), calc(var(--ty) * -18px));
     }
 
     .hl-media {
@@ -174,6 +178,7 @@
       top: calc(50% - 13.5vh);
       font-size: 27vh;
       font-variation-settings: 'wdth' 80;
+      transform: translate(calc(var(--tx) * -14px), calc(var(--ty) * -9px));
     }
 
     .hl-me {
@@ -222,7 +227,10 @@
       justify-content: space-between;
       align-items: baseline;
       line-height: 1;
+      will-change: transform;
     }
+    .p2-row:nth-child(1) { transform: translate(calc(var(--tx) * -16px), calc(var(--ty) * -8px)); }
+    .p2-row:nth-child(2) { transform: translate(calc(var(--tx) * -22px), calc(var(--ty) * -11px)); }
     .p2-hl {
       font-family: 'Nohemi', sans-serif;
       font-weight: 300;
@@ -380,7 +388,13 @@
         display: flex;
         align-items: baseline;
         line-height: 1.05;
+        will-change: transform;
       }
+      .p2-row-m:nth-child(1) { transform: translate(calc(var(--tx) * -10px), calc(var(--ty) * -5px)); }
+      .p2-row-m:nth-child(2) { transform: translate(calc(var(--tx) * -14px), calc(var(--ty) * -7px)); }
+      .p2-row-m:nth-child(3) { transform: translate(calc(var(--tx) * -18px), calc(var(--ty) * -9px)); }
+      .p2-row-m:nth-child(4) { transform: translate(calc(var(--tx) * -22px), calc(var(--ty) * -11px)); }
+      .p2-row-m:nth-child(5) { transform: translate(calc(var(--tx) * -26px), calc(var(--ty) * -13px)); }
       .p2-row-spread { justify-content: space-between; }
       .p2-row-left   { justify-content: flex-start; gap: 0.15em; }
 
@@ -669,6 +683,10 @@
       // Lerp smoothed mouse toward raw mouse — one lerp drives all tiles
       smx = lerp(smx, mx, FLOAT_LERP);
       smy = lerp(smy, my, FLOAT_LERP);
+
+      // Update CSS variables for text parallax (used by headline elements)
+      document.documentElement.style.setProperty('--tx', smx.toFixed(4));
+      document.documentElement.style.setProperty('--ty', smy.toFixed(4));
 
       states.forEach((s, tile) => {
         // Float uses smoothed mouse so parallax eases in/out
