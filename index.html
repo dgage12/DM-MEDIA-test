@@ -43,6 +43,46 @@
       padding: 0;
     }
 
+    /* ── CUSTOM CURSOR (desktop only) ── */
+    @media (hover: hover) and (pointer: fine) {
+      body { cursor: none; }
+      a, button { cursor: none; }
+    }
+    .cursor-dot, .cursor-ring {
+      position: fixed;
+      top: 0; left: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      will-change: transform;
+      transform: translate(-50%, -50%);
+    }
+    .cursor-dot {
+      width: 6px; height: 6px;
+      background: #ea4824;
+      transition: width 0.25s, height 0.25s, opacity 0.25s;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1.5px solid rgba(234,72,36,0.55);
+      transition: width 0.4s cubic-bezier(0.23,1,0.32,1),
+                  height 0.4s cubic-bezier(0.23,1,0.32,1),
+                  border-color 0.4s,
+                  opacity 0.3s;
+    }
+    .cursor-ring.hovering {
+      width: 72px; height: 72px;
+      border-color: rgba(234,72,36,0.9);
+    }
+    .cursor-dot.hovering {
+      width: 4px; height: 4px;
+      opacity: 0.4;
+    }
+    /* hide on mobile */
+    @media (hover: none), (pointer: coarse) {
+      .cursor-dot, .cursor-ring { display: none; }
+    }
+
     html, body {
       width: 100%;
       overflow-x: hidden;
@@ -766,8 +806,25 @@
         tile.style.transform = `translate(${s.fx + s.hx}px,${s.fy + s.hy}px) scale(${s.scale})`;
       });
 
+      // Custom cursor — desktop only
+      if (!isTouchOnly) {
+        crx = lerp(crx, cx, 0.13);
+        cry = lerp(cry, cy, 0.13);
+        const anyHovered = [...states.values()].some(s => s.hovered);
+        cursorDot.style.transform  = `translate(calc(${cx}px - 50%), calc(${cy}px - 50%))`;
+        cursorRing.style.transform = `translate(calc(${crx}px - 50%), calc(${cry}px - 50%))`;
+        cursorDot.classList.toggle('hovering',  anyHovered);
+        cursorRing.classList.toggle('hovering', anyHovered);
+      }
+
       requestAnimationFrame(tick);
     }
+
+    // Cursor ring — lerped in tick() for smooth lag
+    const cursorDot  = document.getElementById('cursorDot');
+    const cursorRing = document.getElementById('cursorRing');
+    let crx = -200, cry = -200; // start off-screen
+
     tick();
 
     // Typewriter
@@ -880,5 +937,9 @@
       }
     }, { threshold: 0.5 }).observe(document.querySelector('.p2-copy'));
   </script>
+
+  <!-- Custom cursor (desktop only) -->
+  <div class="cursor-dot"  id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
 </body>
 </html>
