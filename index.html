@@ -568,7 +568,8 @@
   </section>
 
   <script>
-    const SCALE          = 2.16;
+    const isTouchOnly    = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const SCALE          = isTouchOnly ? 1.4 : 2.16;
     const PARALLAX       = 25.5;
     const FLOAT_STR      = 136;
     const SCALE_LERP     = 0.065;
@@ -589,8 +590,6 @@
       't-cherry' : 0.5,
       't-pspray' : 0.9,
     };
-
-    const isTouchOnly = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
     // Start cursor off-screen so no tile is accidentally hovered on load
     let mx = 0, my = 0, cx = -9999, cy = -9999;
@@ -711,7 +710,13 @@
           s.zElevated = false;
         }
 
-        tile.style.transform = `translate(${s.fx + s.hx}px,${s.fy + s.hy}px) scale(${s.scale})`;
+        if (isTouchOnly) {
+          const tx = clamp(s.fx, s.minTx, s.maxTx);
+          const ty = clamp(s.fy, s.minTy, s.maxTy);
+          tile.style.transform = `translate(${tx}px,${ty}px) scale(${s.scale})`;
+        } else {
+          tile.style.transform = `translate(${s.fx + s.hx}px,${s.fy + s.hy}px) scale(${s.scale})`;
+        }
       });
 
       requestAnimationFrame(tick);
