@@ -843,7 +843,7 @@
       });
 
       // Custom cursor — desktop only
-      if (!isTouchOnly) {
+      if (!isTouchOnly && cursorDot && cursorRing) {
         crx = lerp(crx, cx, 0.13);
         cry = lerp(cry, cy, 0.13);
         const anyHovered = [...states.values()].some(s => s.hovered);
