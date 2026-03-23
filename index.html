@@ -631,6 +631,10 @@
 
   </section>
 
+  <!-- Custom cursor (desktop only) — must be in DOM before the script queries them -->
+  <div class="cursor-dot"  id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
   <script>
     const isTouchOnly    = !window.matchMedia('(hover: hover) and (pointer: fine)').matches;
     const SCALE          = isTouchOnly ? 2.0 : 2.16;
@@ -973,8 +977,5 @@
     }, { threshold: 0.5 }).observe(document.querySelector('.p2-copy'));
   </script>
 
-  <!-- Custom cursor (desktop only) -->
-  <div class="cursor-dot"  id="cursorDot"></div>
-  <div class="cursor-ring" id="cursorRing"></div>
 </body>
 </html>
