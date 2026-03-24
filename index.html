@@ -955,7 +955,7 @@
         if (!deleting) {
           setText(word.slice(0, ++ci));
           if (ci === word.length) {
-            if (isLast) return;
+            if (isLast) { setTimeout(() => { wi = 0; ci = words[0].length; deleting = true; setText(words[0]); setTimeout(() => step(myGen), WAIT); }, 3000); return; }
             deleting = true; setTimeout(() => step(myGen), WAIT); return;
           }
         } else {
