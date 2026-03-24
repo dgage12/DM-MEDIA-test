@@ -955,12 +955,12 @@
         if (!deleting) {
           setText(word.slice(0, ++ci));
           if (ci === word.length) {
-            if (isLast) { setTimeout(() => { wi = 0; ci = words[0].length; deleting = true; setText(words[0]); setTimeout(() => step(myGen), WAIT); }, 3000); return; }
+            if (isLast) { deleting = true; setTimeout(() => step(myGen), 3000); return; }
             deleting = true; setTimeout(() => step(myGen), WAIT); return;
           }
         } else {
           setText(word.slice(0, --ci));
-          if (ci === 0) { deleting = false; wi++; setTimeout(() => step(myGen), 300); return; }
+          if (ci === 0) { deleting = false; wi = isLast ? 0 : wi + 1; setTimeout(() => step(myGen), 300); return; }
         }
         setTimeout(() => step(myGen), deleting ? DEL_SPEED : TYPE_SPEED);
       }
